@@ -1,21 +1,18 @@
-# ===== easy settings =================================================
 CSV_FILE            = r"C:\Users\kevin\OneDrive\CRYPTO_BOTS\DATA\BTCUSDT_60m_20250101_to_20250519.csv"
 INITIAL_CAPITAL     = 10000
 TRADE_VALUE_USD     = 250
 BTC_PER_SHARE       = 0.00001
 COMMISSION_FRACTION = 0.001
-MAX_OPEN_TRADES     = 25  # how many trades can be open at one time
+MAX_OPEN_TRADES     = 25
 SVM_MODELS_FOLDER   = r"C:\Users\kevin\OneDrive\CRYPTO_BOTS\SVM_Bot\SVM_models"
 PNG_FOLDER          = r"C:\Users\kevin\OneDrive\CRYPTO_BOTS\SVM_backtest\Backtest_Results"
-# ====================================================================
+
 
 import os, glob, warnings
 import pandas as pd, numpy as np, joblib, ta
 from backtesting import Backtest, Strategy
 import matplotlib.pyplot as plt, matplotlib.dates as mdates
 warnings.filterwarnings('ignore', category=UserWarning)
-
-# ---------- find model + scaler ----------
 
 def load_joblibs(folder):
     files = glob.glob(os.path.join(folder, "*.joblib"))
@@ -34,8 +31,6 @@ def model_tag(path):
     tags = [p for p in base.split('_')
             if p.lower().startswith(("kernel-", "c-", "gamma-"))]
     return '_'.join(tags) if tags else 'model'
-
-# ---------- data helpers ----------
 
 def load_csv(path):
     df = pd.read_csv(path)
@@ -68,7 +63,6 @@ def scale_prices(df, unit):
     d['Volume'] = d['Volume'] / unit
     return d
 
-# ---------- strategy ----------
 class SvmStrategy(Strategy):
     feature_names = ['Return_1bar','EMA_12','EMA_26','MACD_Hist','RSI_14',
                      'Stoch_K_14','BB_Width_20_2','ATR_14','OBV_Change','Volume_Change']
@@ -87,7 +81,7 @@ class SvmStrategy(Strategy):
         )[0]
         price = self.data.Close[-1]
         cash  = self._broker._cash
-        open_trades = len(self.trades)  # current number of open trades
+        open_trades = len(self.trades)
 
         if pred == 1:
             if open_trades < MAX_OPEN_TRADES and cash >= TRADE_VALUE_USD:
@@ -96,8 +90,6 @@ class SvmStrategy(Strategy):
                     self.buy(size=shares)
         elif self.position.is_long:
             self.position.close()
-
-# ---------- plotting ----------
 
 def make_plot(stats, price_df, png_name):
     equity = stats['_equity_curve']['Equity']
@@ -117,7 +109,7 @@ def make_plot(stats, price_df, png_name):
                color='gray', alpha=0.7)
     ax[0].set_ylabel('Equity ($)')
     ax[0].grid(True, linestyle=':')
-    ax[0].legend(loc='upper right')         # legend moved
+    ax[0].legend(loc='upper right')
 
     ax[1].bar(price_df.index, price_df['Volume'], color='purple', width=0.02)
     ax[1].set_ylabel('Volume')
@@ -132,10 +124,8 @@ def make_plot(stats, price_df, png_name):
     plt.close()
     print('Chart saved to', full_path)
 
-# ---------- summary ----------
-
 def print_summary(s):
-    keys = ['Equity Final [$]', 'Return [%]', 'Buy & Hold Return [%]',   # CAGR removed
+    keys = ['Equity Final [$]', 'Return [%]', 'Buy & Hold Return [%]',
             'Sharpe Ratio', 'Alpha [%]',
             'Max. Drawdown [%]', 'Win Rate [%]', 'Profit Factor', '# Trades']
     print('--- summary ---')
@@ -147,8 +137,6 @@ def print_summary(s):
             print(f'{k:<25} {v}')
     print('---------------')
 
-# ---------- main ----------
-
 def main():
     raw   = load_csv(CSV_FILE)
     feat  = add_features(raw)
@@ -157,7 +145,7 @@ def main():
     bt = Backtest(trade, SvmStrategy,
                   cash=INITIAL_CAPITAL,
                   commission=COMMISSION_FRACTION,
-                  exclusive_orders=False)  # allow many trades at once
+                  exclusive_orders=False)
 
     stats = bt.run()
     print_summary(stats)
@@ -169,3 +157,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
