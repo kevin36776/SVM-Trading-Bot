@@ -95,7 +95,6 @@ def fetch_bybit_ohlcv(symbol, interval, start_time_ms, end_time_ms, limit):
                                 "low": float(kline[3]),
                                 "close": float(kline[4]),
                                 "volume": float(kline[5])
-                                # Removed turnover field
                             })
                             new_candles_in_range += 1
                     else:
@@ -107,7 +106,6 @@ def fetch_bybit_ohlcv(symbol, interval, start_time_ms, end_time_ms, limit):
               
                 last_processed_candle_timestamp = int(kline_list[-1][0])
 
-                # --- Loop termination checks ---
         
                 if last_processed_candle_timestamp >= end_time_ms:
                     print("Reached end of specified date range.")
@@ -120,7 +118,6 @@ def fetch_bybit_ohlcv(symbol, interval, start_time_ms, end_time_ms, limit):
                
                 current_start_time_ms = last_processed_candle_timestamp + interval_val
                 
-                # --- Safety check for infinite loop ---
                 if current_start_time_ms <= last_processed_candle_timestamp:
                      print("Warning: Next start time calculation did not advance. Stopping to prevent infinite loop.")
                      break
@@ -172,3 +169,4 @@ if __name__ == "__main__":
     else:
 
         print("\nNo data was fetched or saved.")
+
