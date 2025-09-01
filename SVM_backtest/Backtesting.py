@@ -1,4 +1,3 @@
-# ===== easy settings =================================================
 CSV_FILE            = r"C:\Users\kevin\OneDrive\CRYPTO_BOTS\DATA\BTCUSDT_60m_20250101_to_20250519.csv"
 INITIAL_CAPITAL     = 10000
 TRADE_VALUE_USD     = 500
@@ -6,7 +5,6 @@ BTC_PER_SHARE       = 0.00001
 COMMISSION_FRACTION = 0.001
 SVM_MODELS_FOLDER   = r"C:\Users\kevin\OneDrive\CRYPTO_BOTS\SVM_Bot\SVM_models"
 PNG_FOLDER          = r"C:\Users\kevin\OneDrive\CRYPTO_BOTS\SVM_backtest\Backtest_Results"
-# ====================================================================
 
 import os, glob, warnings
 import pandas as pd, numpy as np, joblib, ta
@@ -14,7 +12,6 @@ from backtesting import Backtest, Strategy
 import matplotlib.pyplot as plt, matplotlib.dates as mdates
 warnings.filterwarnings('ignore', category=UserWarning)
 
-# ---------- find model + scaler ----------
 def load_joblibs(folder):
     files = glob.glob(os.path.join(folder, "*.joblib"))
     if len(files) != 2:
@@ -33,7 +30,6 @@ def model_tag(path):
             if p.lower().startswith(("kernel-", "c-", "gamma-"))]
     return '_'.join(tags) if tags else 'model'
 
-# ---------- data helpers ----------
 def load_csv(path):
     df = pd.read_csv(path)
     df['open_time'] = pd.to_datetime(df['open_time'])
@@ -65,7 +61,6 @@ def scale_prices(df, unit):
     d['Volume'] = d['Volume'] / unit
     return d
 
-# ---------- strategy ----------
 class SvmStrategy(Strategy):
     feature_names = ['Return_1bar','EMA_12','EMA_26','MACD_Hist','RSI_14',
                      'Stoch_K_14','BB_Width_20_2','ATR_14','OBV_Change','Volume_Change']
@@ -85,10 +80,9 @@ class SvmStrategy(Strategy):
         elif self.position.is_long:
             self.position.close()
 
-# ---------- plotting ----------
 def make_plot(stats, price_df, png_name):
     equity = stats['_equity_curve']['Equity']
-    # buy-and-hold equity curve (convert scaled price back to USD)
+    
     close_actual = price_df['Close'] / BTC_PER_SHARE
     bh_equity = INITIAL_CAPITAL * (close_actual / close_actual.iloc[0])
 
@@ -118,7 +112,6 @@ def make_plot(stats, price_df, png_name):
     plt.savefig(full_path); plt.close()
     print('Chart saved to', full_path)
 
-# ---------- summary ----------
 def print_summary(s):
     keys = ['Equity Final [$]','Return [%]','Buy & Hold Return [%]',
             'CAGR [%]','Sharpe Ratio','Alpha [%]',
@@ -132,7 +125,6 @@ def print_summary(s):
             print(f'{k:<25} {v}')
     print('---------------')
 
-# ---------- main ----------
 def main():
     raw   = load_csv(CSV_FILE)
     feat  = add_features(raw)
@@ -151,3 +143,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
