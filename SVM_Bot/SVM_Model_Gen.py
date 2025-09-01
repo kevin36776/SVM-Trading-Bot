@@ -6,22 +6,17 @@ from sklearn.preprocessing import StandardScaler
 import joblib
 import ta
 
-# --- User-Configurable Parameters ---
 CSV_FILE_PATH = r"C:\Users\kevin\OneDrive\CRYPTO_BOTS\DATA\BTCUSDT_60m_20240101_to_20250101.csv"  # Example: r"C:\data\BTCUSDT_15min_data.csv"
 MODEL_SAVE_DIR = r"C:\Users\kevin\OneDrive\CRYPTO_BOTS\SVM_Bot\SVM_models"
-CRYPTO_ASSET = "BTCUSDT"  # For naming saved files (e.g., 'BTCUSDT', 'ETHUSDT')
-# TIMEFRAME is now used for naming purposes only.
-# Ensure your input CSV data is already in the desired timeframe (e.g., "15T" or "1H").
-TIMEFRAME = "1H"
-N_FUTURE_PERIODS = 1  # How many periods ahead to predict (e.g., 1 for the next candle)
+CRYPTO_ASSET = "BTCUSDT"  # For naming saved files
 
-# SVM Parameters
+TIMEFRAME = "1H"
+N_FUTURE_PERIODS = 1  # How many periods ahead to predict
+
 SVM_KERNEL = 'sigmoid'  # Options: 'rbf', 'linear', 'poly', 'sigmoid'
-SVM_C = 50  # Regularization parameter
+SVM_C = 50
 SVM_GAMMA = .01  # Kernel coefficient for 'rbf', 'poly', 'sigmoid'. Options: 'scale', 'auto', or a float value
 SVM_DEGREE = 2      # Degree for 'poly' kernel. Ignored by other kernels.
-
-# --- End of User-Configurable Parameters ---
 
 def load_and_prepare_data(csv_path):
     """
@@ -232,3 +227,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
